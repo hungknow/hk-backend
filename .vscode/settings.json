@@ -1,0 +1,7 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./economy_core/Cargo.toml",
+        "./market_data/Cargo.toml"
+    ],
+    "rust-analyzer.showUnlinkedFileNotification": false
+}
