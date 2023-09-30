@@ -1,4 +1,4 @@
-use crate::Ohlc;
+use crate::{Ohlc, EconomyError};
 
 pub trait OhlcCsvParser {
     fn parse() -> Vec<Ohlc>;
@@ -23,8 +23,8 @@ pub struct OhlcReplayState {
  */
 pub trait OhlcReplay {
     fn get_state(&self) -> OhlcReplayState;
-    fn set_read_index(&self, new_read_index: u32);
-    fn get_ohlc_up_to_read_index(&self, read_index: u32) -> Vec<Ohlc>;
+    fn set_read_index(&self, new_read_index: u32) -> Result<u32, EconomyError>;
+    fn get_ohlc_up_to_read_index(&self, read_index: u32) -> Result<Vec<Ohlc>, EconomyError>;
     
     // fn increase_read_index(&self, interval: u32)
 }
