@@ -51,12 +51,14 @@ impl OhlcReplay for FakeOhlcReplay {
 
     fn get_ohlc_up_to_read_index(
         &mut self,
-        read_index: u32,
+        count: u32,
     ) -> Result<Vec<economy_core::Ohlc>, EconomyError> {
-        if read_index > self.state.available_count {
+        if count > self.state.available_count {
             return Err(EconomyError::OutOfRange);
         }
-        Ok(self.vec.clone())
+        Ok(self.vec[0..count as usize].to_vec())
+        // Ok(self.vec.take(n as usize).collect::<Vec<economy_core::Ohlc>>())
+        // Ok(self.vec.iter().take(count))
     }
 }
 
@@ -66,11 +68,22 @@ mod tests {
 
     #[test]
     fn test_ohlc_replay() {
+        let max_available: u32 = 10;
         let mut fake_ohlc_replay = FakeOhlcReplay::new();
         let state = fake_ohlc_replay.get_state();
-        assert_eq!(state.available_count, 10);
+        assert_eq!(state.available_count, max_available);
         assert_eq!(state.read_index, 0);
 
         assert_eq!(fake_ohlc_replay.set_read_index(1), Ok(0));
+        let mut ohlc: Vec<Ohlc> = fake_ohlc_replay.get_ohlc_up_to_read_index(1).unwrap();
+        assert_eq!(ohlc.len(), 1);
+
+        ohlc = fake_ohlc_replay.get_ohlc_up_to_read_index(2).unwrap();
+        assert_eq!(ohlc.len(), 2);
+
+        ohlc = fake_ohlc_replay
+            .get_ohlc_up_to_read_index(max_available)
+            .unwrap();
+        assert_eq!(ohlc.len(), max_available as usize);
     }
 }
