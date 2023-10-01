@@ -6,6 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+csv = "1.2.2"
+chrono = { version = "0.4.31", features = ["serde", "wasmbind"] }
 diesel = { version = "2.1.2", features = ["postgres"] }
 dotenvy = "0.15"
 economy_core = { path = "../economy_core" }
