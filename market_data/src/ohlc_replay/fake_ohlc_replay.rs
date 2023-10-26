@@ -70,7 +70,7 @@ mod tests {
     fn test_ohlc_replay() {
         let max_available: u32 = 10;
         let mut fake_ohlc_replay = FakeOhlcReplay::new();
-        let state = fake_ohlc_replay.get_state();
+        let mut state = fake_ohlc_replay.get_state();
         assert_eq!(state.available_count, max_available);
         assert_eq!(state.read_index, 0);
 
@@ -80,10 +80,25 @@ mod tests {
 
         ohlc = fake_ohlc_replay.get_ohlc_up_to_read_index(2).unwrap();
         assert_eq!(ohlc.len(), 2);
+        
+        // After reading the HOLC up to the read index,
+        // the value of read _index ist still the same
+        state = fake_ohlc_replay.get_state();
+        assert_eq!(state.read_index, 1);
 
         ohlc = fake_ohlc_replay
             .get_ohlc_up_to_read_index(max_available)
             .unwrap();
+        assert_eq!(ohlc.len(), max_available as usize);
+        state = fake_ohlc_replay.get_state();
+        assert_eq!(state.read_index, 1);
+
+
+        // Set the read index to a specific index
+        assert_eq!(fake_ohlc_replay.set_read_index(0), Ok(1));
+        state = fake_ohlc_replay.get_state();
+        assert_eq!(state.available_count, max_available);
+        assert_eq!(state.read_index, 0);
         assert_eq!(ohlc.len(), max_available as usize);
     }
 }
