@@ -1,8 +1,9 @@
 use crate::{Ohlc, EconomyError};
 
 pub trait OhlcCsvParser {
-    fn parse() -> Vec<Ohlc>;
+    fn parse(reader: csv::Reader<&[u8]>) -> Vec<Ohlc>;
 }
+
 
 pub trait OhlcReader {
     fn get(&self, symbol: &str, query: &str) -> Vec<Ohlc>;

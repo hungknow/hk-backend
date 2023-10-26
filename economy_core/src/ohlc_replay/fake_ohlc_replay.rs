@@ -1,6 +1,6 @@
 use std::ops::Sub;
 
-use economy_core::{EconomyError, Ohlc, OhlcReplay, OhlcReplayState};
+use crate::{OhlcReplayState, Ohlc, EconomyError, OhlcReplay};
 
 pub struct FakeOhlcReplay {
     state: OhlcReplayState, // Maximum state
@@ -36,7 +36,7 @@ impl FakeOhlcReplay {
 }
 
 impl OhlcReplay for FakeOhlcReplay {
-    fn get_state(&self) -> economy_core::OhlcReplayState {
+    fn get_state(&self) -> OhlcReplayState {
         self.state
     }
 
@@ -52,7 +52,7 @@ impl OhlcReplay for FakeOhlcReplay {
     fn get_ohlc_up_to_read_index(
         &mut self,
         count: u32,
-    ) -> Result<Vec<economy_core::Ohlc>, EconomyError> {
+    ) -> Result<Vec<Ohlc>, EconomyError> {
         if count > self.state.available_count {
             return Err(EconomyError::OutOfRange);
         }

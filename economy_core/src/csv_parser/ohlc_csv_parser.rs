@@ -1,8 +1,6 @@
 use csv::Reader;
-use economy_core::Ohlc;
 
-use super::OhlcCsvParser;
-
+use crate::{Ohlc, OhlcCsvParser};
 
 pub struct OhlcCsvParserFile {}
 
