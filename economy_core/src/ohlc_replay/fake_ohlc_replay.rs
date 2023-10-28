@@ -8,8 +8,7 @@ pub struct FakeOhlcReplay {
 }
 
 impl FakeOhlcReplay {
-    pub fn new() -> FakeOhlcReplay {
-        let target_available_count: u32 = 10;
+    pub fn new_random(target_available_count: u32) -> FakeOhlcReplay {
         let mut vec = Vec::new();
         for n in 1..target_available_count + 1 {
             vec.push(Ohlc {
@@ -29,6 +28,7 @@ impl FakeOhlcReplay {
             state: OhlcReplayState {
                 read_index: 0,
                 available_count: target_available_count,
+                data_exhausted: true,
             },
             vec: vec,
         }
@@ -60,6 +60,14 @@ impl OhlcReplay for FakeOhlcReplay {
         // Ok(self.vec.take(n as usize).collect::<Vec<economy_core::Ohlc>>())
         // Ok(self.vec.iter().take(count))
     }
+
+    fn get_ohlc_at_index(&mut self, read_index: u32) -> Result<&Ohlc, EconomyError> {
+        if read_index > self.state.available_count {
+            return Err(EconomyError::OutOfRange)
+        }
+
+        self.vec.get(read_index as usize).ok_or(EconomyError::OutOfRange)
+    }
 }
 
 #[cfg(test)]
@@ -69,7 +77,7 @@ mod tests {
     #[test]
     fn test_ohlc_replay() {
         let max_available: u32 = 10;
-        let mut fake_ohlc_replay = FakeOhlcReplay::new();
+        let mut fake_ohlc_replay = FakeOhlcReplay::new_random(max_available);
         let mut state = fake_ohlc_replay.get_state();
         assert_eq!(state.available_count, max_available);
         assert_eq!(state.read_index, 0);
