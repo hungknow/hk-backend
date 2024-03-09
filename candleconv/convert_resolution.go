@@ -57,12 +57,5 @@ func ConvertResolution(
 		}
 	}
 
-	// Count the number of bars in the new resolution
-	targetResolutionSeconds := toResolution.Seconds()
-	newBarsCount := (bars.Times[len(bars.Times)-1] - bars.Times[0] + targetResolutionSeconds) / targetResolutionSeconds
-	toResolutionBarsTimesLen := len(toResolutionBars.Times)
-	if toResolutionBarsTimesLen != int(newBarsCount) {
-		return nil, errors.NewAppErrorf(errors.AppInternalError, "The number of bars (%d) in the new resolution is not correct, expected %d", toResolutionBarsTimesLen, newBarsCount)
-	}
 	return toResolutionBars, nil
 }
