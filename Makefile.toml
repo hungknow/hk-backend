@@ -5,7 +5,3 @@ extend = [
 [env]
 CARGO_PROFILE = "dev"
 CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
-
-[tasks.echog]
-script = "echo hello"
-script_runner = "@shell"
