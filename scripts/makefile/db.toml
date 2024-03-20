@@ -1,5 +1,9 @@
 [tasks.sqitch-install]
-script = [
-    "docker pull sqitch/sqitch;",
-    "curl -L https://git.io/JJKCn -o ./sqitch && chmod +x ./sqitch; readlink -f  ./sqitch"
-]
+depends = ["sqitch-install.mac"]
+
+[tasks.sqitch-install.mac]
+condition = { platforms = ["mac"] }
+script = '''
+    brew tap sqitchers/sqitch
+    brew install sqitch --with-postgres-support
+'''
