@@ -1,4 +1,5 @@
 %syntax-version=1.0.0
 %project=hk_backend
 
-symbol_info 2024-03-20T08:04:00Z System Administrator <root@Hungs-MacBook-Pro.local> # Add table symbol_info to store the symbol info
+add_trading_schema 2024-03-20T08:18:57Z hungbuiknow <hungbuiknow@gmail.com> # Add trading Schema
+add_symbol_info 2024-03-20T08:04:00Z hungbuiknow <hungbuiknow@gmail.com> # Add table symbol_info to store the symbol info
