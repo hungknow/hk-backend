@@ -1,0 +1,5 @@
+[tasks.sqitch-install]
+script = [
+    "docker pull sqitch/sqitch;",
+    "curl -L https://git.io/JJKCn -o ./sqitch && chmod +x ./sqitch; readlink -f  ./sqitch"
+]
