@@ -1,0 +1,3 @@
+create database trading;
+create user trading_user with encrypted password 'aZAmkRBOjhdP5bw';
+grant all privileges on database trading to trading_user;
