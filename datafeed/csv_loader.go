@@ -73,7 +73,7 @@ func (o *CandleCSVLoader) CsvHeaderTypeDotDateTimeParseRow(records []string) (*m
 		High:  high,
 		Low:   low,
 		Close: close,
-		Time:  openTime.Unix(),
+		Time:  openTime,
 		Vol:   vol,
 	}, nil
 }
@@ -113,7 +113,7 @@ func (o *CandleCSVLoader) CsvHeaderTypeTickerDateTimeParseRow(records []string) 
 		High:  high,
 		Low:   low,
 		Close: close,
-		Time:  openTime.Unix(),
+		Time:  openTime,
 		Vol:   vol,
 	}, nil
 }
@@ -122,9 +122,9 @@ func (o *CandleCSVLoader) GetCandles(fromTime time.Time, toTime time.Time) (*mod
 	candles := models.NewCandles()
 
 	fromTimeIsZero := fromTime.IsZero()
-	fromTimeUnix := fromTime.Unix()
+	fromTimeUnix := fromTime
 	toTimeIsZero := toTime.IsZero()
-	toTimeUnix := toTime.Unix()
+	toTimeUnix := toTime
 
 	for {
 		records, err := o.CsvReader.Read()
@@ -153,10 +153,10 @@ func (o *CandleCSVLoader) GetCandles(fromTime time.Time, toTime time.Time) (*mod
 			return nil, appErr
 		}
 
-		if !toTimeIsZero && candle.Time > toTimeUnix {
+		if !toTimeIsZero && candle.Time.After(toTimeUnix) {
 			break
 		}
-		if fromTimeIsZero || candle.Time >= fromTimeUnix {
+		if fromTimeIsZero || candle.Time.Compare(fromTimeUnix) >= 0 {
 			candles.PushCandle(candle)
 		}
 	}

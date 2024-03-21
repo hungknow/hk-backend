@@ -33,7 +33,7 @@ func main() {
 	}
 
 	// Load CSV files
-	csvFilePath := path.Clean("data/candles_csv/XAUUSD_2023_01.csv")
+	csvFilePath := path.Clean("data/candles_csv/XAUUSD/XAUUSD_2023_01.csv")
 	f, nerr := os.Open(csvFilePath)
 	if nerr != nil {
 		log.Panic().Msgf("%+v", err)
@@ -54,11 +54,27 @@ func main() {
 		return
 	}
 
-	// Insert candles into DB
+	startingTime := candles.GetTimeAt(0)
+	endingTime := candles.GetTimeAt(candleLen - 1)
+
+	// Get the Forex candles store
 	forexCandleDB := sqlDB.ForexCandles()
-	err = forexCandleDB.UpsertCandles(ctx, 1, models.ResolutionM1, candles)
+
+	// Insert candles into DB
+	// err = forexCandleDB.UpsertCandles(ctx, 1, models.ResolutionM1, candles)
+	// if err != nil {
+	// 	log.Panic().Msgf("%+v", err)
+	// }
+
+	queriedCandles, err := forexCandleDB.QueryCandles(ctx, 1, models.ResolutionM1, startingTime, endingTime.Add(time.Second), -1)
 	if err != nil {
 		log.Panic().Msgf("%+v", err)
+	}
+	if queriedCandles.Len() != candleLen {
+		log.Panic().Msgf("queriedCandles.Len() %d != candleLen %d", queriedCandles.Len(), candleLen)
+	}
+	if queriedCandles.Times[0] != candles.Times[0] {
+		log.Panic().Msgf("queriedCandles.Times[0] %s != candles.Times[0] %s", queriedCandles.Times[0].String(), candles.Times[0].String())
 	}
 
 	log.Info().Msg("DONE!!!")

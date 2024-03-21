@@ -41,36 +41,6 @@ func (o *DBSQLStore) prepareUpsertCandles(thresholdRows int) string {
 	return builder.String()
 }
 
-// func (o *DBSQLStore) SubmitCandles(ctx context.Context, stmt *sql.Stmt, symbol_id int, resolution models.Resolution, barIndex int, bars *models.Candles, thresholdRows int) *errors.AppError {
-// 	vals := make([]interface{}, 0)
-
-// 	sqlStr := ""
-// 	numFields := 8
-// 	maxLen := len(bars.Times)
-// 	for rowIndex := 0; rowIndex < thresholdRows && barIndex < maxLen; rowIndex++ {
-// 		sqlStr += "("
-// 		for j := 0; j < numFields; j++ {
-// 			sqlStr += `$` + strconv.Itoa(rowIndex*numFields+j+1) + `,`
-// 		}
-// 		sqlStr = sqlStr[:len(sqlStr)-1] + `),`
-// 		barIndex++
-
-// 		vals = append(vals, symbol_id, resolution.String(),
-// 			time.Unix(bars.Times[barIndex], 0).UTC(),
-// 			bars.Opens[barIndex], bars.Closes[barIndex],
-// 			bars.Highs[barIndex], bars.Lows[barIndex], bars.Vols[barIndex])
-// 	}
-
-// 	log.Debug().Msgf("UpsertCandles Stmt: %s", sqlStr)
-
-// 	res, err := stmt.ExecContext(ctx, vals...)
-// 	if err != nil {
-// 		return errors.NewAppErrorf(errors.AppDatabaseError, "%v", err)
-// 	}
-
-// 	return nil
-// }
-
 func (o *DBSQLStore) UpsertCandles(ctx context.Context, symbol_id int, resolution models.Resolution, bars *models.Candles) *errors.AppError {
 	if bars == nil {
 		return errors.NewAppErrorf(errors.AppErrorInvalidParams, "candles is empty")
@@ -96,6 +66,7 @@ func (o *DBSQLStore) UpsertCandles(ctx context.Context, symbol_id int, resolutio
 			// Prepare the upsert statement
 			sqlStr := o.prepareUpsertCandles(newRowThreshold)
 			stmt, err = tx.PrepareContext(ctx, sqlStr)
+			defer stmt.Close()
 			if err != nil {
 				return errors.NewAppErrorf(errors.AppDatabaseError, "%v: %s", err, sqlStr)
 			}
@@ -107,7 +78,7 @@ func (o *DBSQLStore) UpsertCandles(ctx context.Context, symbol_id int, resolutio
 		maxThreshold := rowIdx + rowThreshold
 		for ; rowIdx < maxThreshold; rowIdx++ {
 			vals = append(vals, symbol_id, resolution.String(),
-				time.Unix(bars.Times[rowIdx], 0).UTC(),
+				bars.Times[rowIdx],
 				bars.Opens[rowIdx], bars.Closes[rowIdx],
 				bars.Highs[rowIdx], bars.Lows[rowIdx], bars.Vols[rowIdx])
 		}
@@ -118,36 +89,6 @@ func (o *DBSQLStore) UpsertCandles(ctx context.Context, symbol_id int, resolutio
 		}
 	}
 
-	// for timeIdx := 0; timeIdx < maxLen; {
-	// 	sqlStr := `INSERT INTO ` + TradingForexCandlesTable + `("symbol_id", "resolution", "open_time", "open", "close", "high", "low", "volume") VALUES `
-
-	// 	for rowIndex := 0; rowIndex < thresholdRows && timeIdx < maxLen; rowIndex++ {
-	// 		sqlStr += "("
-	// 		for j := 0; j < numFields; j++ {
-	// 			sqlStr += `$` + strconv.Itoa(rowIndex*numFields+j+1) + `,`
-	// 		}
-	// 		sqlStr = sqlStr[:len(sqlStr)-1] + `),`
-	// 		timeIdx++
-
-	// 	}
-
-	// 	// Remove the trailing comma
-	// 	sqlStr = sqlStr[:len(sqlStr)-1]
-
-	// 	sqlStr += ` ON CONFLICT ("symbol_id", "resolution", "open_time") DO UPDATE SET "open" = EXCLUDED.open, "close" = EXCLUDED.close, "high" = EXCLUDED.high, "low" = EXCLUDED.low, "volume" = EXCLUDED.volume`
-	// 	sqlStr += ";"
-
-	// 	log.Debug().Msgf("UpsertCandles Stmt: %s", sqlStr)
-	// 	stmt, err := tx.PrepareContext(ctx, sqlStr)
-	// 	if err != nil {
-	// 		return errors.NewAppErrorf(errors.AppDatabaseError, "%v", err)
-	// 	}
-	// 	defer stmt.Close()
-
-	// 	if res == nil {
-	// 	}
-	// }
-
 	if err := tx.Commit(); err != nil {
 		return errors.NewAppErrorf(errors.AppDatabaseError, "%v", err)
 	}
@@ -157,6 +98,36 @@ func (o *DBSQLStore) UpsertCandles(ctx context.Context, symbol_id int, resolutio
 	return nil
 }
 
-func (o *DBSQLStore) QueryCandles(ctx context.Context, symbol models.SymbolName, resolution models.Resolution, from time.Time, exclusiveTo time.Time) (*models.Candles, *errors.AppError) {
-	panic("implement me")
+func (o *DBSQLStore) QueryCandles(ctx context.Context, symbol_id int, resolution models.Resolution, from time.Time, exclusiveTo time.Time, limit int64) (*models.Candles, *errors.AppError) {
+	queryStr := `SELECT "open_time", "open", "close", "high", "low", "volume" FROM ` + TradingForexCandlesTable + " WHERE symbol_id = $1 AND resolution = $2 AND open_time >= $3 AND open_time < $4 ORDER BY open_time ASC "
+	if limit > 0 {
+		queryStr += " LIMIT " + strconv.FormatInt(limit, 10)
+	}
+	queryStr += ";"
+
+	args := []interface{}{
+		symbol_id,
+		resolution.String(),
+		from,
+		exclusiveTo,
+	}
+
+	rows, err := o.db.QueryContext(ctx, queryStr, args...)
+	if err != nil {
+		return nil, errors.NewAppErrorf(errors.AppDatabaseError, "%v", err)
+	}
+	defer rows.Close()
+
+	candles := models.NewCandles()
+
+	for rows.Next() {
+		candle := models.Candle{}
+		err := rows.Scan(&candle.Time, &candle.Open, &candle.Close, &candle.High, &candle.Low, &candle.Vol)
+		if err != nil {
+			return nil, errors.NewAppErrorf(errors.AppDatabaseError, "%v", err)
+		}
+		candles.PushCandle(&candle)
+	}
+
+	return candles, nil
 }

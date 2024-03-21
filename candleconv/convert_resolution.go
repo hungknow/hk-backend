@@ -2,6 +2,7 @@ package candleconv
 
 import (
 	"math"
+	"time"
 
 	"hungknow.com/blockchain/errors"
 	"hungknow.com/blockchain/models"
@@ -37,10 +38,10 @@ func ConvertResolution(
 	previousTimeUpperBound := int64(-1)
 
 	for index, timeOfCurrentBar := range bars.Times {
-		timeOfCurrentBarLower, timeOfCurrentBarUpper := toResolution.BoundSeconds(timeOfCurrentBar)
-		if timeOfCurrentBar >= previousTimeUpperBound || currentToResolutionBarsTimeIndex < 0 {
+		timeOfCurrentBarLower, timeOfCurrentBarUpper := toResolution.BoundSeconds(timeOfCurrentBar.Unix())
+		if timeOfCurrentBar.Unix() >= previousTimeUpperBound || currentToResolutionBarsTimeIndex < 0 {
 			toResolutionBars = toResolutionBars.Push(
-				timeOfCurrentBarLower,
+				time.Unix(timeOfCurrentBarLower, 0),
 				bars.Opens[index],
 				bars.Highs[index],
 				bars.Lows[index],

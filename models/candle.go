@@ -1,21 +1,23 @@
 package models
 
+import "time"
+
 type Candle struct {
-	Close float64 `json:"close"`
-	High  float64 `json:"high"`
-	Low   float64 `json:"low"`
-	Open  float64 `json:"open"`
-	Time  int64   `json:"time"`
-	Vol   float64 `json:"vol"`
+	Close float64   `json:"close"`
+	High  float64   `json:"high"`
+	Low   float64   `json:"low"`
+	Open  float64   `json:"open"`
+	Time  time.Time `json:"time"`
+	Vol   float64   `json:"vol"`
 }
 
 type Candles struct {
-	Closes []float64 `json:"closes"`
-	Highs  []float64 `json:"highs"`
-	Lows   []float64 `json:"lows"`
-	Opens  []float64 `json:"opens"`
-	Times  []int64   `json:"times"`
-	Vols   []float64 `json:"vols"`
+	Closes []float64   `json:"closes"`
+	Highs  []float64   `json:"highs"`
+	Lows   []float64   `json:"lows"`
+	Opens  []float64   `json:"opens"`
+	Times  []time.Time `json:"times"`
+	Vols   []float64   `json:"vols"`
 }
 
 func NewCandles() *Candles {
@@ -24,7 +26,7 @@ func NewCandles() *Candles {
 		Highs:  make([]float64, 0),
 		Lows:   make([]float64, 0),
 		Opens:  make([]float64, 0),
-		Times:  make([]int64, 0),
+		Times:  make([]time.Time, 0),
 		Vols:   make([]float64, 0),
 	}
 }
@@ -33,7 +35,7 @@ func (o *Candles) DetectResolution() Resolution {
 	if len(o.Times) < 2 {
 		return ResolutionUnknown
 	}
-	return ResolutionFromSeconds(o.Times[1] - o.Times[0])
+	return ResolutionFromSeconds(o.Times[1].Unix() - o.Times[0].Unix())
 }
 
 func (o *Candles) PushCandle(candle *Candle) *Candles {
@@ -46,7 +48,7 @@ func (o *Candles) PushCandle(candle *Candle) *Candles {
 	return o
 }
 
-func (o *Candles) Push(time int64, open float64, high float64, low float64, close float64, vol float64) *Candles {
+func (o *Candles) Push(time time.Time, open float64, high float64, low float64, close float64, vol float64) *Candles {
 	o.Times = append(o.Times, time)
 	o.Opens = append(o.Opens, open)
 	o.Highs = append(o.Highs, high)
@@ -73,4 +75,8 @@ func (o *Candles) Slice(fromIdx int, uptoIdx int) *Candles {
 		Times:  o.Times[fromIdx:uptoIdx],
 		Vols:   o.Vols[fromIdx:uptoIdx],
 	}
+}
+
+func (o *Candles) GetTimeAt(idx int) time.Time {
+	return o.Times[idx]
 }
