@@ -9,7 +9,7 @@ import (
 )
 
 type ForexCandles interface {
-	UpsertCandles(ctx context.Context, symbol models.SymbolName, resolution models.Resolution, bars *models.Candles) *errors.AppError
+	UpsertCandles(ctx context.Context, symbol_id int, resolution models.Resolution, bars *models.Candles) *errors.AppError
 	QueryCandles(ctx context.Context, symbol models.SymbolName, resolution models.Resolution, from time.Time, exclusiveTo time.Time) (*models.Candles, *errors.AppError)
 }
 

@@ -1,0 +1,2 @@
+[tasks.csvtodb]
+script = "go run cmd/csvtodb/csvtodb.go"

@@ -21,8 +21,8 @@ type SearchSymbolResultItem struct {
 
 type PeriodParams struct {
 	CountBack     int `json:"countBack"`
-	FromTimestamp int `json:"fromTimestamp"`
-	ToTimestamp   int `json:"toTimestamp"`
+	FromTimestamp int64 `json:"fromTimestamp"`
+	ToTimestamp   int64 `json:"toTimestamp"`
 }
 
 type GetBarsResult struct {

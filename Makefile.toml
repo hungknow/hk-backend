@@ -1,5 +1,6 @@
 extend = [
-    { path = "scripts/makefile/db.toml" }
+    { path = "scripts/makefile/cmd.toml" },
+    { path = "scripts/makefile/db.toml" },
 ]
 
 [env]

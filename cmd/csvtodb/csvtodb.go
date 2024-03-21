@@ -2,34 +2,64 @@ package main
 
 import (
 	"context"
+	"os"
+	"path"
+	"time"
 
-	"github.com/sirupsen/logrus"
+	"github.com/phuslu/log"
 	"hungknow.com/blockchain/config"
+	"hungknow.com/blockchain/datafeed"
 	"hungknow.com/blockchain/db/dbstoresql"
+	"hungknow.com/blockchain/logutils"
 	"hungknow.com/blockchain/models"
 )
 
+// Read CSV files and insert candles into DB
 func main() {
+	logutils.SetupPhusluLog()
+
 	ctx := context.Background()
 
 	// Read DB config file
 	appConfig, err := config.GetConfig()
 	if err != nil {
-		panic(err)
+		log.Panic().Msgf("%+v", err)
 	}
 
 	// Create DB store
 	sqlDB, err := dbstoresql.NewDBSQLStore(appConfig.DB)
 	if err != nil {
-		panic(err)
+		log.Panic().Msgf("%+v", err)
 	}
 
 	// Load CSV files
-	forexCandleDB := sqlDB.ForexCandles()
-	err = forexCandleDB.UpsertCandles(ctx, "XAUUSD", models.ResolutionM1, nil)
+	csvFilePath := path.Clean("data/candles_csv/20220608_xauusd_1m.csv")
+	f, nerr := os.Open(csvFilePath)
+	if nerr != nil {
+		log.Panic().Msgf("%+v", err)
+	}
+	defer f.Close()
+
+	candleCSVLoader := datafeed.NewCandleCSVLoader(f)
+	candles, err := candleCSVLoader.GetCandles(time.Time{}, time.Time{})
 	if err != nil {
-		panic(err)
+		log.Panic().Msgf("%+v", err)
 	}
 
-	logrus.Info("DONE!!!")
+	candleLen := len(candles.Times)
+	log.Debug().Msgf("Loaded %d candles", candleLen)
+
+	if candleLen == 0 {
+		log.Debug().Msgf("No candles to load")
+		return
+	}
+
+	// Insert candles into DB
+	forexCandleDB := sqlDB.ForexCandles()
+	err = forexCandleDB.UpsertCandles(ctx, 1, models.ResolutionM1, candles)
+	if err != nil {
+		log.Panic().Msgf("%+v", err)
+	}
+
+	log.Info().Msg("DONE!!!")
 }

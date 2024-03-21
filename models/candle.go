@@ -55,3 +55,22 @@ func (o *Candles) Push(time int64, open float64, high float64, low float64, clos
 	o.Vols = append(o.Vols, vol)
 	return o
 }
+
+func (o *Candles) Len() int {
+	return len(o.Times)
+}
+
+func (o *Candles) IsEmpty() bool {
+	return len(o.Times) == 0
+}
+
+func (o *Candles) Slice(fromIdx int, uptoIdx int) *Candles {
+	return &Candles{
+		Closes: o.Closes[fromIdx:uptoIdx],
+		Highs:  o.Highs[fromIdx:uptoIdx],
+		Lows:   o.Lows[fromIdx:uptoIdx],
+		Opens:  o.Opens[fromIdx:uptoIdx],
+		Times:  o.Times[fromIdx:uptoIdx],
+		Vols:   o.Vols[fromIdx:uptoIdx],
+	}
+}
