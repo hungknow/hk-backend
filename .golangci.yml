@@ -1,0 +1,20 @@
+run:
+    # timeout for analysis, e.g. 30s, 5m, default is 1m
+    timeout: 1m
+linters-settings:
+    gofmt:
+        simplify: false
+    lll:
+        line-length: 120
+        tab-width: 1
+    # revive:
+        # - name: line-length-limit
+        #   severity: warning
+        #   disabled: false
+        #   exclude: [""]
+        #   arguments: [120]
+linters:
+    # First we have to disable all to enable only specific ones
+    disable-all: true
+    enable:
+        - lll
