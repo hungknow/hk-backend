@@ -11,6 +11,15 @@ import (
 	"hungknow.com/blockchain/models"
 )
 
+type CsvHeaderType int
+
+const (
+	// 2023.01.03,01:00,1826.97,1827.18,1826.39,1826.43,71
+	CsvHeaderTypeDotDateTime CsvHeaderType = iota
+	// XAUUSD,20220608,000000,1849,1849.1,1849,1849,4
+	CsvHeaderTypeTickerDateTime
+)
+
 type csvCandle struct {
 	Ticker string
 	Date   string
@@ -23,20 +32,53 @@ type csvCandle struct {
 }
 
 type CandleCSVLoader struct {
-	CsvReader *csv.Reader
+	CsvReader  *csv.Reader
+	headerType CsvHeaderType
 }
 
-func NewCandleCSVLoader(r io.Reader) *CandleCSVLoader {
+func NewCandleCSVLoader(r io.Reader, headerType CsvHeaderType) *CandleCSVLoader {
 	return &CandleCSVLoader{
-		CsvReader: csv.NewReader(r),
+		CsvReader:  csv.NewReader(r),
+		headerType: headerType,
 	}
 }
 
-// func (o *CandleCSVLoader) GetMetadata() (*models.CandleMetadata, error) {
-// 	return nil, nil
-// }
+func (o *CandleCSVLoader) CsvHeaderTypeDotDateTimeParseRow(records []string) (*models.Candle, *errors.AppError) {
+	openTime, err := time.Parse("2006.01.02 15:04", records[0]+" "+records[1])
+	if err != nil {
+		return nil, errors.NewAppErrorf(errors.AppLoadDataError, "error parsing time: %v", err)
+	}
+	open, err := strconv.ParseFloat(records[2], 64)
+	if err != nil {
+		return nil, errors.NewAppErrorf(errors.AppLoadDataError, "error parsing data: %v, %s", err, strings.Join(records, ","))
+	}
+	high, err := strconv.ParseFloat(records[3], 64)
+	if err != nil {
+		return nil, errors.NewAppErrorf(errors.AppLoadDataError, "error parsing data: %v, %s", err, strings.Join(records, ","))
+	}
+	low, err := strconv.ParseFloat(records[4], 64)
+	if err != nil {
+		return nil, errors.NewAppErrorf(errors.AppLoadDataError, "error parsing data: %v, %s", err, strings.Join(records, ","))
+	}
+	close, err := strconv.ParseFloat(records[5], 64)
+	if err != nil {
+		return nil, errors.NewAppErrorf(errors.AppLoadDataError, "error parsing data: %v, %s", err, strings.Join(records, ","))
+	}
+	vol, err := strconv.ParseFloat(records[6], 64)
+	if err != nil {
+		return nil, errors.NewAppErrorf(errors.AppLoadDataError, "error parsing data: %v, %s", err, strings.Join(records, ","))
+	}
+	return &models.Candle{
+		Open:  open,
+		High:  high,
+		Low:   low,
+		Close: close,
+		Time:  openTime.Unix(),
+		Vol:   vol,
+	}, nil
+}
 
-func (o *CandleCSVLoader) rowToCandle(records []string) (*models.Candle, *errors.AppError) {
+func (o *CandleCSVLoader) CsvHeaderTypeTickerDateTimeParseRow(records []string) (*models.Candle, *errors.AppError) {
 	date := records[1]
 	hourminute := records[2]
 
@@ -97,7 +139,16 @@ func (o *CandleCSVLoader) GetCandles(fromTime time.Time, toTime time.Time) (*mod
 			continue
 		}
 
-		candle, appErr := o.rowToCandle(records)
+		var candle *models.Candle
+		var appErr *errors.AppError
+		switch o.headerType {
+		case CsvHeaderTypeDotDateTime:
+			candle, appErr = o.CsvHeaderTypeDotDateTimeParseRow(records)
+		case CsvHeaderTypeTickerDateTime:
+			candle, appErr = o.CsvHeaderTypeTickerDateTimeParseRow(records)
+		default:
+			appErr = errors.NewAppErrorf(errors.AppLoadDataError, "unknown header type: %v", o.headerType)
+		}
 		if appErr != nil {
 			return nil, appErr
 		}

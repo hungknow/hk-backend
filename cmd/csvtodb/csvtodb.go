@@ -33,14 +33,14 @@ func main() {
 	}
 
 	// Load CSV files
-	csvFilePath := path.Clean("data/candles_csv/20220608_xauusd_1m.csv")
+	csvFilePath := path.Clean("data/candles_csv/XAUUSD_2023_01.csv")
 	f, nerr := os.Open(csvFilePath)
 	if nerr != nil {
 		log.Panic().Msgf("%+v", err)
 	}
 	defer f.Close()
 
-	candleCSVLoader := datafeed.NewCandleCSVLoader(f)
+	candleCSVLoader := datafeed.NewCandleCSVLoader(f, datafeed.CsvHeaderTypeDotDateTime)
 	candles, err := candleCSVLoader.GetCandles(time.Time{}, time.Time{})
 	if err != nil {
 		log.Panic().Msgf("%+v", err)
