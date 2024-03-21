@@ -4,34 +4,34 @@ type Resolution int
 
 const (
 	ResolutionUnknown Resolution = 0
-	Resolution1S      Resolution = 1
-	Resolution1M      Resolution = 60
-	Resolution5M      Resolution = 300
-	Resolution15M     Resolution = 900
-	Resolution1H      Resolution = 3600
-	Resolution4H      Resolution = 14400
-	Resolution1D      Resolution = 86400
-	Resolution1W      Resolution = 604800
+	ResolutionS1      Resolution = 1
+	ResolutionM1      Resolution = 60
+	ResolutionM5      Resolution = 300
+	ResolutionM15     Resolution = 900
+	ResolutionH1      Resolution = 3600
+	ResolutionH4      Resolution = 14400
+	ResolutionD1      Resolution = 86400
+	ResolutionW1      Resolution = 604800
 )
 
 func ResolutionFromSeconds(seconds int64) Resolution {
 	switch seconds {
 	case 1:
-		return Resolution1S
+		return ResolutionS1
 	case 60:
-		return Resolution1M
+		return ResolutionM1
 	case 300:
-		return Resolution5M
+		return ResolutionM5
 	case 900:
-		return Resolution15M
+		return ResolutionM15
 	case 3600:
-		return Resolution1H
+		return ResolutionH1
 	case 14400:
-		return Resolution4H
+		return ResolutionH4
 	case 86400:
-		return Resolution1D
+		return ResolutionD1
 	case 604800:
-		return Resolution1W
+		return ResolutionW1
 	default:
 		return ResolutionUnknown
 	}
@@ -39,22 +39,22 @@ func ResolutionFromSeconds(seconds int64) Resolution {
 
 func (r Resolution) String() string {
 	switch r {
-	case Resolution1S:
-		return "1S"
-	case Resolution1M:
-		return "1M"
-	case Resolution5M:
-		return "5M"
-	case Resolution15M:
-		return "15M"
-	case Resolution1H:
-		return "1H"
-	case Resolution4H:
-		return "4H"
-	case Resolution1D:
-		return "1D"
-	case Resolution1W:
-		return "1W"
+	case ResolutionS1:
+		return "S1"
+	case ResolutionM1:
+		return "M1"
+	case ResolutionM5:
+		return "M5"
+	case ResolutionM15:
+		return "M15"
+	case ResolutionH1:
+		return "H1"
+	case ResolutionH4:
+		return "H4"
+	case ResolutionD1:
+		return "D1"
+	case ResolutionW1:
+		return "W1"
 	default:
 		return "Unknown"
 	}

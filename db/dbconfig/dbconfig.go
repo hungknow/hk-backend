@@ -1,6 +1,6 @@
 package dbconfig
 
-type DBConfig struct {
+type Config struct {
 	Host         string `koanf:"host"`
 	Port         int    `koanf:"port"`
 	Username     string `koanf:"username"`

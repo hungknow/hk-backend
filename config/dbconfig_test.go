@@ -11,7 +11,7 @@ import (
 
 func TestDBCon(t *testing.T) {
 	k := koanf.New(".")
-	expectedDBConfig := &dbconfig.DBConfig{
+	expectedDBConfig := &dbconfig.Config{
 		Host: "localhost",
 		Port: 8888,
 		Username: "postgres",
@@ -20,7 +20,7 @@ func TestDBCon(t *testing.T) {
 	}
 	k.Set("database", *expectedDBConfig)
 
-	dbConfig, err := config.LoadDBConfig(k)
+	dbConfig, err := config.GetDBConfig(k)
 	require.NoError(t, err)
 	require.Equal(t, expectedDBConfig, dbConfig)
 
@@ -29,14 +29,14 @@ func TestDBCon(t *testing.T) {
 	expectedDBConfig1 := &*expectedDBConfig
 	expectedDBConfig1.Username = "test1"
 	k.Set("DATABASE_USERNAME", expectedDBConfig1.Username)
-	dbConfig, err = config.LoadDBConfig(k)
+	dbConfig, err = config.GetDBConfig(k)
 	require.NoError(t, err)
 	require.Equal(t, expectedDBConfig1, dbConfig)
 
 	expectedDBConfig2 := &*expectedDBConfig1
 	expectedDBConfig2.Password = "password2"
 	k.Set("DATABASE_PASSWORD", "password2") 
-	dbConfig, err = config.LoadDBConfig(k)
+	dbConfig, err = config.GetDBConfig(k)
 	require.NoError(t, err)
 	require.Equal(t, expectedDBConfig2, dbConfig)
 }

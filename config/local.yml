@@ -1,6 +1,4 @@
 database:
   host: localhost
-  port: 9543
-  username: trading_user
-  password: trading_password
-  database_name: test
+  port: 9432
+  database_name: trading

@@ -8,6 +8,8 @@ const (
 	AppErrorUnknown       AppErrorCode = iota
 	AppErrorInvalidParams AppErrorCode = iota
 	AppInternalError      AppErrorCode = iota
+	AppConfigError        AppErrorCode = iota
+	AppDatabaseError      AppErrorCode = iota
 )
 
 type AppError struct {

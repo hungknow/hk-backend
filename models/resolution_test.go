@@ -8,8 +8,8 @@ import (
 )
 
 func TestResolution(t *testing.T) {
-	m1 := models.Resolution1M
-	m5 := models.Resolution5M
+	m1 := models.ResolutionM1
+	m5 := models.ResolutionM5
 
 	t.Run("BoundSeconds", func(t *testing.T) {
 		cases := []struct {

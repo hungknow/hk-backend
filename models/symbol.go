@@ -1,5 +1,11 @@
 package models
 
+type SymbolName string
+
+const (
+	SymbolNameXAUUSD SymbolName = "XAUUSD"
+)
+
 type SymbolInfo struct {
 	BaseNames            []string     `json:"baseNames"`
 	SupportedResolutions []Resolution `json:"supportedResolutions"`
