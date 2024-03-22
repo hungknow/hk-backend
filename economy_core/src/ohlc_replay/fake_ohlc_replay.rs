@@ -1,10 +1,12 @@
 use std::ops::Sub;
 
-use crate::{EconomyError, Ohlc, OhlcReplay, OhlcReplayState};
+use crate::{EconomyError, Ohlc, OhlcReplay, OhlcReplayState, Next};
 
 pub struct FakeOhlcReplay {
     state: OhlcReplayState, // Maximum state
     vec: Vec<Ohlc>,
+
+    // nextValue: &'r mut dyn Next<Ohlc>,
 }
 
 impl FakeOhlcReplay {
@@ -26,13 +28,22 @@ impl FakeOhlcReplay {
 
         FakeOhlcReplay {
             state: OhlcReplayState {
-                // read_index: 0,
                 available_count: vec.len(),
                 data_exhausted: true,
             },
             vec: vec,
         }
     }
+
+    // pub fn new_from_csv_parser(next_value: impl Next<Ohlc>) -> FakeOhlcReplay {
+    //     FakeOhlcReplay {
+    //         state: OhlcReplayState {
+    //             available_count: 0,
+    //             data_exhausted: false,
+    //         },
+    //         vec: Vec::new(),
+    //     }
+    // }
 }
 
 impl OhlcReplay for FakeOhlcReplay {
@@ -68,7 +79,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_ohlc_replay() {
+    fn ohlc_replay_new_random() {
         let max_available: usize = 2;
         let mut fake_ohlc_replay = FakeOhlcReplay::new_random(max_available);
         assert_eq!(fake_ohlc_replay.vec.len(), max_available as usize);

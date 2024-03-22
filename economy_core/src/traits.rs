@@ -1,4 +1,4 @@
-use crate::{Ohlc, EconomyError};
+use crate::{Ohlc, EconomyError, Feed};
 
 pub trait Reset {
     fn reset(&mut self);
@@ -14,18 +14,20 @@ pub trait Next<T> {
     fn next(&mut self, input: T) -> Self::Output;
 }
 
+/// Generates the next `Event`. Acts as the system heartbeat.
+pub trait MarketGenerator<Event> {
+    /// Return the next market `Event`.
+    fn next(&mut self) -> Feed<Event>;
+}
+
 /// Close price of a particular period.
 pub trait Close {
    fn close(&self) -> f64; 
 }
 
-pub trait OhlcSource {
-    
-}
-
-pub trait OhlcCsvParser {
-    fn parse(reader: csv::Reader<&[u8]>) -> Vec<Ohlc>;
-}
+// pub trait OhlcCsvParser {
+//     fn parse(reader: csv::Reader<&[u8]>) -> Option<Result<Vec<Ohlc>, EconomyError>>;
+// }
 
 pub trait OhlcReader {
     fn get(&self, symbol: &str, query: &str) -> Vec<Ohlc>;

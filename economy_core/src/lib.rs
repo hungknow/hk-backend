@@ -1,3 +1,6 @@
+mod enums;
+pub use enums::*;
+
 mod errors;
 pub use errors::*;
 
