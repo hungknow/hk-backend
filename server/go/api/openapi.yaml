@@ -1,0 +1,138 @@
+openapi: 3.0.2
+info:
+  description: |
+    This API allow to interact with the trading system.
+  title: Trading API
+  version: 1.0.0
+servers:
+- description: Local server
+  url: http://localhost:9001
+paths:
+  /candles:
+    get:
+      operationId: getCandles
+      parameters:
+      - description: The symbol of the instrument
+        explode: true
+        in: query
+        name: symbol
+        required: true
+        schema:
+          $ref: '#/components/schemas/symbol_ticker'
+        style: form
+      - description: The resolution of the candles
+        explode: true
+        in: query
+        name: resolution
+        required: true
+        schema:
+          $ref: '#/components/schemas/resolution'
+        style: form
+      - description: The start UNIX timestamp
+        explode: true
+        in: query
+        name: from
+        required: true
+        schema:
+          type: integer
+        style: form
+      - description: The end UNIX timestamp
+        explode: true
+        in: query
+        name: to
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/candles'
+          description: A list of candles
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/hk_error'
+          description: Not found
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/hk_error'
+          description: Internal server error
+      summary: Get the list of candles
+components:
+  schemas:
+    symbol_ticker:
+      enum:
+      - MOCK:XAUUSD
+      type: string
+    candles:
+      example:
+        times:
+        - 0.8008281904610115
+        - 0.8008281904610115
+        opens:
+        - 5.637376656633329
+        - 5.637376656633329
+        highs:
+        - 1.4658129805029452
+        - 1.4658129805029452
+        lows:
+        - 5.962133916683182
+        - 5.962133916683182
+        closes:
+        - 6.027456183070403
+        - 6.027456183070403
+      properties:
+        times:
+          items:
+            format: int64
+            type: number
+          type: array
+        closes:
+          items:
+            format: double
+            type: number
+          type: array
+        highs:
+          items:
+            format: double
+            type: number
+          type: array
+        lows:
+          items:
+            format: double
+            type: number
+          type: array
+        opens:
+          items:
+            format: double
+            type: number
+          type: array
+      type: object
+    hk_error:
+      example:
+        code: 2
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+      type: object
+    resolution:
+      enum:
+      - m1
+      - m5
+      - m15
+      - m30
+      - h1
+      - h4
+      - d1
+      - w1
+      type: string

@@ -1,22 +1,35 @@
 [tasks.openapi-install]
-# depends = ["openapi-install.mac"]
+dependencies = ["openapi-install.mac"]
 script = '''
 cargo install cargo-progenitor-hk
 '''
 
-# [tasks.openapi-install.mac]
-# condition = { platforms = ["mac"] }
-# script = '''
-#     # brew install openapi-generator;
-#     x
-# '''
+[tasks.openapi-install.mac]
+condition = { platforms = ["mac"] }
+script = '''
+    brew install openapi-generator;
+'''
 
 [tasks.openapi-generate]
+dependencies = [
+    "openapi-generate-sdk-rust",
+    "openapi-generate-server-go"
+]
+
+[tasks.openapi-generate-sdk-rust]
 script = '''
 cargo progenitor-hk -i openapi/trading.yaml \
     -o sdk/trading/rust \
     -n hktrading-client \
     --description "SDK Client to interact with the HKTrading API" \
     --license-name MIT \
-    -v 0.0.4
+    -v 0.0.5
+'''
+
+[tasks.openapi-generate-server-go]
+script = '''
+openapi-generator generate -g go-server \
+    -i openapi/trading.yaml \
+    -o server/go \
+    --additional-properties=router=chi,serverPort=9001,packageVersion=0.0.1,packageName=hktrading_server
 '''
