@@ -1,7 +1,9 @@
 {
-    "rust-analyzer.linkedProjects": [
-        "./economy_core/Cargo.toml",
-        "./market_data/Cargo.toml"
-    ],
-    "rust-analyzer.showUnlinkedFileNotification": false
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": ["--fast"],
+  "go.formatTool": "default",
+  "[go]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false
+  }
 }
