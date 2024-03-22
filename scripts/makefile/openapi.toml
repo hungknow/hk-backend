@@ -1,0 +1,22 @@
+[tasks.openapi-install]
+# depends = ["openapi-install.mac"]
+script = '''
+cargo install cargo-progenitor-hk
+'''
+
+# [tasks.openapi-install.mac]
+# condition = { platforms = ["mac"] }
+# script = '''
+#     # brew install openapi-generator;
+#     x
+# '''
+
+[tasks.openapi-generate]
+script = '''
+cargo progenitor-hk -i openapi/trading.yaml \
+    -o sdk/trading/rust \
+    -n hktrading-client \
+    --description "SDK Client to interact with the HKTrading API" \
+    --license-name MIT \
+    -v 0.0.4
+'''
