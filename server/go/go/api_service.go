@@ -3,10 +3,12 @@ package hktrading_server
 import (
 	"context"
 	"net/http"
+
+	"hungknow.com/blockchain/db/dbstore"
 )
 
 type APIService struct {
-
+	dbStore dbstore.DBStore
 }
 
 func NewAPIService() *APIService {

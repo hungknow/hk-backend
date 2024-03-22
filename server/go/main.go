@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	log.Printf("Server started")
+	log.Printf("Server started on port 9001")
 
 	DefaultAPIService := hktrading_server.NewAPIService()
 	DefaultAPIController := hktrading_server.NewDefaultAPIController(DefaultAPIService)
