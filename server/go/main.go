@@ -10,19 +10,40 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	hktrading_server "github.com/hungknow/hktrading_server/go"
+	"github.com/phuslu/log"
+	"hungknow.com/blockchain/config"
+	"hungknow.com/blockchain/datafeed"
+	"hungknow.com/blockchain/db/dbstoresql"
+	"hungknow.com/blockchain/logutils"
+	"hungknow.com/blockchain/symbols"
 )
 
 func main() {
-	log.Printf("Server started on port 9001")
+	logutils.SetupPhusluLog()
 
-	DefaultAPIService := hktrading_server.NewAPIService()
+	symbolManager := symbols.NewSymbolManager()
+
+	appConfig, appErr := config.GetConfig("../../config")
+	if appErr != nil {
+		log.Panic().Msgf("Error getting config: %+v", appErr)
+	}
+	dbStore, appErr := dbstoresql.NewDBSQLStore(appConfig.DB)
+	if appErr != nil {
+		log.Panic().Msgf("Error creating db store: %+v", appErr)
+	}
+	forexDataFeed := datafeed.NewForexDataFeed(dbStore, symbolManager)
+
+	DefaultAPIService := hktrading_server.NewAPIService(symbolManager, forexDataFeed)
 	DefaultAPIController := hktrading_server.NewDefaultAPIController(DefaultAPIService)
 
 	router := hktrading_server.NewRouter(DefaultAPIController)
 
-	log.Fatal(http.ListenAndServe(":9001", router))
+	log.Info().Msgf("Server started on port 9001")
+	err := http.ListenAndServe(":9001", router)
+	if err != nil {
+		log.Fatal().Msgf("Error starting server: %+v", err)
+	}
 }

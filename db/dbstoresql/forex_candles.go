@@ -41,7 +41,7 @@ func (o *DBSQLStore) prepareUpsertCandles(thresholdRows int) string {
 	return builder.String()
 }
 
-func (o *DBSQLStore) UpsertCandles(ctx context.Context, symbol_id int, resolution models.Resolution, bars *models.Candles) *errors.AppError {
+func (o *DBSQLStore) UpsertCandles(ctx context.Context, symbol_id int64, resolution models.Resolution, bars *models.Candles) *errors.AppError {
 	if bars == nil {
 		return errors.NewAppErrorf(errors.AppErrorInvalidParams, "candles is empty")
 	}
@@ -98,7 +98,8 @@ func (o *DBSQLStore) UpsertCandles(ctx context.Context, symbol_id int, resolutio
 	return nil
 }
 
-func (o *DBSQLStore) QueryCandles(ctx context.Context, symbol_id int, resolution models.Resolution, from time.Time, exclusiveTo time.Time, limit int64) (*models.Candles, *errors.AppError) {
+func (o *DBSQLStore) QueryCandles(ctx context.Context, symbol_id int64, resolution models.Resolution, from time.Time, exclusiveTo time.Time, limit int64) (*models.Candles, *errors.AppError) {
+	log.Debug().Msgf("QueryCandles: symbol_id=%d, resolution=%s, from=%s, exclusiveTo=%s, limit=%d", symbol_id, resolution.String(), from.UTC().String(), exclusiveTo.UTC().String(), limit)
 	queryStr := `SELECT "open_time", "open", "close", "high", "low", "volume" FROM ` + TradingForexCandlesTable + " WHERE symbol_id = $1 AND resolution = $2 AND open_time >= $3 AND open_time < $4 ORDER BY open_time ASC "
 	if limit > 0 {
 		queryStr += " LIMIT " + strconv.FormatInt(limit, 10)

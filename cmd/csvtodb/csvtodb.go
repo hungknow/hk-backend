@@ -21,7 +21,7 @@ func main() {
 	ctx := context.Background()
 
 	// Read DB config file
-	appConfig, err := config.GetConfig()
+	appConfig, err := config.GetConfig("../../")
 	if err != nil {
 		log.Panic().Msgf("%+v", err)
 	}

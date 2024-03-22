@@ -8,6 +8,7 @@ const (
 	ResolutionM1      Resolution = 60
 	ResolutionM5      Resolution = 300
 	ResolutionM15     Resolution = 900
+	ResolutionM30     Resolution = 1800
 	ResolutionH1      Resolution = 3600
 	ResolutionH4      Resolution = 14400
 	ResolutionD1      Resolution = 86400
@@ -24,6 +25,8 @@ func ResolutionFromSeconds(seconds int64) Resolution {
 		return ResolutionM5
 	case 900:
 		return ResolutionM15
+	case 1800:
+		return ResolutionM30
 	case 3600:
 		return ResolutionH1
 	case 14400:
@@ -47,6 +50,8 @@ func (r Resolution) String() string {
 		return "M5"
 	case ResolutionM15:
 		return "M15"
+	case ResolutionM30:
+		return "M30"
 	case ResolutionH1:
 		return "H1"
 	case ResolutionH4:

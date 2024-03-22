@@ -1,15 +1,11 @@
 package models
 
-type SymbolName string
-
-const (
-	SymbolNameXAUUSD SymbolName = "XAUUSD"
-)
+type SymbolSticker string
 
 type SymbolInfo struct {
-	BaseNames            []string     `json:"baseNames"`
+	ID int64 `json:"-"`
 	SupportedResolutions []Resolution `json:"supportedResolutions"`
 	// Unique symbol id It's an unique identifier for this particular symbol in your symbology.
-	Ticket     string     `json:"ticket"`
-	SymbolType SymbolType `json:"symbolType"`
+	Sticker    SymbolSticker `json:"sticker"`
+	SymbolType SymbolType    `json:"symbolType"`
 }

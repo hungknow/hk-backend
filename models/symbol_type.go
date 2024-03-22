@@ -3,7 +3,7 @@ package models
 type SymbolType string
 
 const (
-	Forex  SymbolType = "forex"
-	Crypto SymbolType = "crypto"
-	Stock  SymbolType = "stock"
+	SymbolTypeForex  SymbolType = "forex"
+	SymbolTypeCrypto SymbolType = "crypto"
+	SymbolTypeStock  SymbolType = "stock"
 )

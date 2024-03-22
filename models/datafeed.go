@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 /*
 	{
 	    description: 'Apple Inc.',
@@ -20,12 +22,12 @@ type SearchSymbolResultItem struct {
 }
 
 type PeriodParams struct {
-	CountBack     int `json:"countBack"`
-	FromTimestamp int64 `json:"fromTimestamp"`
-	ToTimestamp   int64 `json:"toTimestamp"`
+	CountBack     int       `json:"countBack"`
+	FromTimestamp time.Time `json:"fromTimestamp"`
+	ToTimestamp   time.Time `json:"toTimestamp"`
 }
 
 type GetBarsResult struct {
-	Bars     []Candle           `json:"bars"`
+	Candles  *Candles        `json:"candles"`
 	Metadata HistoryMetadata `json:"meta"`
 }
