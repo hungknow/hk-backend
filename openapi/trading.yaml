@@ -1,0 +1,112 @@
+openapi: 3.0.2
+info:
+  title: Trading API
+  description: |
+    This API allow to interact with the trading system.
+  version: 1.0.0
+servers:
+  - url: http://localhost:9001
+    description: Local server
+paths:
+  /candles:
+    get:
+      summary: Get the list of candles
+      operationId: getCandles
+      parameters:
+        - name: symbol
+          in: query
+          description: The symbol of the instrument
+          required: true
+          schema:
+            $ref: "#/components/schemas/symbol_ticker"
+        - name: resolution
+          in: query
+          description: The resolution of the candles
+          required: true
+          schema:
+            $ref: "#/components/schemas/resolution"
+        - name: from
+          in: query
+          description: The start UNIX timestamp
+          required: true
+          schema:
+            type: integer
+        - name: to
+          in: query
+          description: The end UNIX timestamp
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: A list of candles
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/candles"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/hk_error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/hk_error"
+
+components:
+  schemas:
+    symbol_ticker:
+      type: string
+      enum:
+        - MOCK:XAUUSD
+    candles:
+      type: object
+      properties:
+        times:
+          type: array
+          items:
+            type: number
+            format: int64
+        closes:
+          type: array
+          items:
+            type: number
+            format: double
+        highs:
+          type: array
+          items:
+            type: number
+            format: double
+        lows:
+          type: array
+          items:
+            type: number
+            format: double
+        opens:
+          type: array
+          items:
+            type: number
+            format: double
+    hk_error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+    resolution:
+      type: string
+      enum:
+        - m1
+        - m5
+        - m15
+        - m30
+        - h1
+        - h4
+        - d1
+        - w1
