@@ -14,13 +14,15 @@ package hktrading_server
 
 type Candles struct {
 
-	Times []float32 `json:"times,omitempty"`
+	Times []int64 `json:"times,omitempty"`
 
 	Closes []float64 `json:"closes,omitempty"`
 
 	Highs []float64 `json:"highs,omitempty"`
 
 	Lows []float64 `json:"lows,omitempty"`
+
+	Vols []float64 `json:"vols,omitempty"`
 
 	Opens []float64 `json:"opens,omitempty"`
 }

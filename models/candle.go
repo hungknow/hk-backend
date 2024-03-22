@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Candle struct {
 	Close float64   `json:"close"`
@@ -18,6 +21,15 @@ type Candles struct {
 	Opens  []float64   `json:"opens"`
 	Times  []time.Time `json:"times"`
 	Vols   []float64   `json:"vols"`
+}
+
+type CandlesJSON struct {
+	Closes []float64 `json:"closes"`
+	Highs  []float64 `json:"highs"`
+	Lows   []float64 `json:"lows"`
+	Opens  []float64 `json:"opens"`
+	Times  []int64   `json:"times"`
+	Vols   []float64 `json:"vols"`
 }
 
 func NewCandles() *Candles {
@@ -78,5 +90,38 @@ func (o *Candles) Slice(fromIdx int, uptoIdx int) *Candles {
 }
 
 func (o *Candles) GetTimeAt(idx int) time.Time {
-	return o.Times[idx]
+	return time.Time(o.Times[idx])
+}
+
+func (o *Candles) MarshalJSON() ([]byte, error) {
+	times := make([]int64, len(o.Times))
+	for i, v := range o.Times {
+		times[i] = v.Unix()
+	}
+	return json.Marshal(&CandlesJSON{
+		Closes: o.Closes,
+		Highs:  o.Highs,
+		Lows:   o.Lows,
+		Opens:  o.Opens,
+		Times:  times,
+		Vols:   o.Vols,
+	})
+}
+
+func (u *Candles) UnmarshalJSON(data []byte) error {
+	candleJSON := &CandlesJSON{}
+	if err := json.Unmarshal(data, &candleJSON); err != nil {
+		return err
+	}
+	u.Closes = candleJSON.Closes
+	u.Highs = candleJSON.Highs
+	u.Lows = candleJSON.Lows
+	u.Opens = candleJSON.Opens
+	u.Vols = candleJSON.Vols
+	u.Times = make([]time.Time, len(candleJSON.Times))
+	for i, v := range candleJSON.Times {
+		u.Times[i] = time.Unix(v, 0)
+	}
+
+	return nil
 }

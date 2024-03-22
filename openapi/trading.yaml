@@ -69,7 +69,7 @@ components:
         times:
           type: array
           items:
-            type: number
+            type: integer
             format: int64
         closes:
           type: array
@@ -82,6 +82,11 @@ components:
             type: number
             format: double
         lows:
+          type: array
+          items:
+            type: number
+            format: double
+        vols:
           type: array
           items:
             type: number

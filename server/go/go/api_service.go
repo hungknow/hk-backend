@@ -31,9 +31,15 @@ func (s *APIService) GetCandles(ctx context.Context, symbol SymbolTicker, resolu
 		return Response(http.StatusNotFound, HkError{Message: appErr.Error()}), nil
 	}
 
+	var toTimestamp time.Time
+	if to > 0 {
+		toTimestamp = time.Unix(int64(to), 0)
+	} else {
+		toTimestamp = time.Now()
+	}
 	param := &models.PeriodParams{
 		FromTimestamp: time.Unix(int64(from), 0),
-		ToTimestamp:   time.Unix(int64(to), 0),
+		ToTimestamp:   toTimestamp,
 	}
 
 	barResult, appErr := s.forexDataFeed.GetBars(ctx, symbolInfo, resolution.ToModel(), param)

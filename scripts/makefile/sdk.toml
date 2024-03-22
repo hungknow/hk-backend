@@ -1,0 +1,6 @@
+[tasks.sdk-publish-rust]
+description = "Publish the Rust SDK to crates.io"
+script = '''
+cd sdk/trading/rust
+cargo publish --allow-dirty
+'''

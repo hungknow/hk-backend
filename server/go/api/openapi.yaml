@@ -73,11 +73,14 @@ components:
     candles:
       example:
         times:
-        - 0.8008281904610115
-        - 0.8008281904610115
+        - 0
+        - 0
+        vols:
+        - 5.637376656633329
+        - 5.637376656633329
         opens:
-        - 5.637376656633329
-        - 5.637376656633329
+        - 2.3021358869347655
+        - 2.3021358869347655
         highs:
         - 1.4658129805029452
         - 1.4658129805029452
@@ -91,7 +94,7 @@ components:
         times:
           items:
             format: int64
-            type: number
+            type: integer
           type: array
         closes:
           items:
@@ -108,6 +111,11 @@ components:
             format: double
             type: number
           type: array
+        vols:
+          items:
+            format: double
+            type: number
+          type: array
         opens:
           items:
             format: double
@@ -116,7 +124,7 @@ components:
       type: object
     hk_error:
       example:
-        code: 2
+        code: 7
         message: message
       properties:
         code:
