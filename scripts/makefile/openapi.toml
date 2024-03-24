@@ -23,7 +23,7 @@ cargo progenitor-hk -i openapi/trading.yaml \
     -n hktrading-client \
     --description "SDK Client to interact with the HKTrading API" \
     --license-name MIT \
-    -v 0.0.7
+    -v 0.0.8
 '''
 
 [tasks.openapi-generate-server-go]
