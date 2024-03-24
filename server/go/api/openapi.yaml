@@ -32,7 +32,7 @@ paths:
         explode: true
         in: query
         name: from
-        required: true
+        required: false
         schema:
           type: integer
         style: form

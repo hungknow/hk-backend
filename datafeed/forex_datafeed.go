@@ -2,7 +2,6 @@ package datafeed
 
 import (
 	"context"
-	"time"
 
 	"hungknow.com/blockchain/db/dbstore"
 	"hungknow.com/blockchain/errors"
@@ -28,14 +27,13 @@ func (o *ForexDataFeed) GetBars(
 	resolution models.Resolution,
 	periodParams *models.PeriodParams,
 ) (*models.GetBarsResult, *errors.AppError) {
-	toTimestamp := periodParams.ToTimestamp
-	if periodParams.ToTimestamp.IsZero() {
-		toTimestamp = time.Now()
+	err := models.PeriodParamsPrepare(periodParams, resolution, 1500)
+	if err != nil {
+		return nil, err
 	}
 
-	// symbolManager.GetSymbolInfoBySticker(symbolInfo.Sticker)
 	candles, err := o.dbStore.ForexCandles().QueryCandles(ctx, symbolInfo.ID, resolution,
-		periodParams.FromTimestamp, toTimestamp, 1500)
+		periodParams.FromTimestamp, periodParams.ToTimestamp, 1500)
 	if err != nil {
 		return nil, err
 	}

@@ -75,3 +75,8 @@ func (r Resolution) BoundSeconds(time int64) (int64, int64) {
 	lowerBound := time - time%secondDurations
 	return lowerBound, lowerBound + secondDurations
 }
+
+func (r Resolution) CountBars(fromTime, toTime int64) int {
+	seconds := toTime - fromTime
+	return int(seconds / r.Seconds())
+}

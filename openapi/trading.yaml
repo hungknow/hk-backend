@@ -28,7 +28,7 @@ paths:
         - name: from
           in: query
           description: The start UNIX timestamp
-          required: true
+          required: false
           schema:
             type: integer
         - name: to
