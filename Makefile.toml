@@ -2,7 +2,8 @@ extend = [
     { path = "scripts/makefile/cmd.toml" },
     { path = "scripts/makefile/db.toml" },
     { path = "scripts/makefile/openapi.toml" },
-    { path = "scripts/makefile/sdk.toml" }
+    { path = "scripts/makefile/sdk.toml" },
+    { path = "scripts/makefile/web.toml" },
 ]
 
 [env]
