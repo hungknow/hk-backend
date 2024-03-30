@@ -2,6 +2,7 @@ package config
 
 import (
 	"path"
+	"path/filepath"
 
 	"github.com/knadh/koanf/parsers/dotenv"
 	"github.com/knadh/koanf/parsers/yaml"
@@ -29,6 +30,10 @@ func GetConfig(configFolderPath string) (*AppConfig, *errors.AppError) {
 		return nil, errors.NewAppErrorf(errors.AppConfigError, "Failed to load .env: %v", err)
 	}
 	configFilePath := path.Clean(path.Join(configFolderPath, "./local.yml"))
+	configFilePath, err = filepath.Abs(configFilePath)
+	if err != nil {
+		return nil, errors.NewAppErrorf(errors.AppConfigError, "Failed to load .env: %v", err)
+	}
 	log.Debug().Msgf("Loading config file: %s", configFilePath)
 	err = k.Load(file.Provider(configFilePath), yamlParser)
 	if err != nil {

@@ -118,6 +118,7 @@ func (o *CandleCSVLoader) CsvHeaderTypeTickerDateTimeParseRow(records []string) 
 	}, nil
 }
 
+// GetCandles reads the CSV file and returns the candles within the specified time range
 func (o *CandleCSVLoader) GetCandles(fromTime time.Time, toTime time.Time) (*models.Candles, *errors.AppError) {
 	candles := models.NewCandles()
 

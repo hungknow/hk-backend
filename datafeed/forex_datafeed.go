@@ -27,13 +27,14 @@ func (o *ForexDataFeed) GetBars(
 	resolution models.Resolution,
 	periodParams *models.PeriodParams,
 ) (*models.GetBarsResult, *errors.AppError) {
-	err := models.PeriodParamsPrepare(periodParams, resolution, 1500)
+	var maxCount int64 = 200
+	err := models.PeriodParamsPrepare(periodParams, resolution, maxCount)
 	if err != nil {
 		return nil, err
 	}
 
 	candles, err := o.dbStore.ForexCandles().QueryCandles(ctx, symbolInfo.ID, resolution,
-		periodParams.FromTimestamp, periodParams.ToTimestamp, 1500)
+		periodParams.FromTimestamp, periodParams.ToTimestamp, maxCount)
 	if err != nil {
 		return nil, err
 	}
